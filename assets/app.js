@@ -41,5 +41,12 @@
       navigator.share({ title: d.title, url: s.getAttribute('data-share') }).catch(function () {});
     }
   });
+  // Live date (Dubai time) for "Last verified: auto" and expiry handling. Static HTML keeps the build date for crawlers.
+  var today = null;
+  try { today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dubai' }).format(new Date()); } catch (e) {}
+  if (/^\d{4}-\d{2}-\d{2}$/.test(today || '')) {
+    d.querySelectorAll('time[data-today]').forEach(function (x) { x.setAttribute('datetime', today); x.textContent = today.split('-').reverse().join('/'); });
+    d.querySelectorAll('.tk[data-expiry]').forEach(function (x) { if (today > x.getAttribute('data-expiry')) x.classList.add('exp'); });
+  }
   if (navigator.share) d.querySelectorAll('[data-share]').forEach(function (x) { x.hidden = false; });
 })();
